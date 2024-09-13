@@ -5,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
+from services.geo import Coordinates, CreateGPX
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -25,7 +27,15 @@ async def read_root(request: Request):
 @app.post("/api/geocode")
 async def test_geocode(request: Request):
     d = await request.json()
-    print(d)
+    crd = Coordinates(d.get("address"))
+    wrt = CreateGPX()
+    x=wrt(crd())
+    return {"result": x}
+
+
+@app.post("/api/geocode_gpx")
+async def test_geocode(request: Request):
+    d = await request.json()
     return {"result": "Geocoded successfully"}
 
 
