@@ -27,7 +27,8 @@ class Coordinates:
         elif len(x) == 4:
             lat, lon = float(x[0]) + float(x[1]) / 60, float(x[2]) + float(x[3]) / 60
         elif len(x) == 6:
-            lat, lon = float(x[0]) + float(x[1]) / 60 + float(x[2]) / 3600, float(x[3]) + float(x[4]) / 60 + float(
+            lat, lon = float(x[0]) + float(x[1]) / 60 + float(x[2]) / 3600, float(x[3]) + float(
+                x[4]) / 60 + float(
                 x[5]) / 3600
         return round(lat, 5), round(lon, 5)
 
@@ -47,10 +48,13 @@ class Coordinates:
                     self.out.append(self.convert_coordinates_full(f"{p1}{p2}", coord))
                 for i in self.out:
                     self.screen += str(i) + "\n"
-                print(self.screen)
                 return self.out
 
         return []
+
+    def make_list(self):
+        self.parse_file()
+        return self.screen
 
     def __call__(self, *args, **kwargs) -> List[Tuple[float, float]]:
         return self.parse_file()

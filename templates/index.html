@@ -65,6 +65,7 @@
             <textarea id="input" placeholder="Введите адрес для геокодирования"></textarea>
             <button onclick="sendData()">Отправить</button>
             <button onclick="downloadData()">Скачать результат</button>
+            <input type="hidden" id="hiddenField" name="hiddenData"> </input>
         </div>
         <div class="output-section">
             <h2>Результат</h2>
@@ -75,10 +76,31 @@
     <script>
         async function sendData() {
             const input = document.getElementById('input').value;
+            const hiddenField = document.getElementById('hiddenField');
             const output = document.getElementById('output');
 
             try {
                 const response = await fetch('/api/geocode', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ address: input }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при отправке запроса');
+                }
+
+                const data = await response.json();
+
+
+                hiddenField.textContent = JSON.stringify(data.result, null, 2);
+            } catch (error) {
+                hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+            }
+            try {
+                const response = await fetch('/api/geocode2', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -118,7 +140,7 @@
         }
 
         function downloadData() {
-            const output = document.getElementById('output').textContent;
+            const output = document.getElementById('hiddenField').textContent;
             if (!output) {
                 alert('Нет данных для скачивания');
                 return;

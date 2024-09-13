@@ -29,14 +29,16 @@ async def test_geocode(request: Request):
     d = await request.json()
     crd = Coordinates(d.get("address"))
     wrt = CreateGPX()
-    x=wrt(crd())
+    x = wrt(crd())
     return {"result": x}
 
 
-@app.post("/api/geocode_gpx")
+@app.post("/api/geocode2")
 async def test_geocode(request: Request):
     d = await request.json()
-    return {"result": "Geocoded successfully"}
+    crd = Coordinates(d.get("address"))
+    x = crd.make_list()
+    return {"result": x}
 
 
 if __name__ == '__main__':
