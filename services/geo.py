@@ -47,6 +47,7 @@ class Coordinates:
                     self.out.append(self.convert_coordinates_full(f"{p1}{p2}", coord))
                 for i in self.out:
                     self.screen += str(i) + "\n"
+                print(self.screen)
                 return self.out
 
         return []
