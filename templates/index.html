@@ -125,9 +125,7 @@
             }
 
             const jsonData = JSON.parse(output);
-            const resultText = jsonData.result; // extract the text from the result property
-
-            const blob = new Blob([resultText], { type: 'text/plain' });
+            const blob = new Blob([jsonData], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
