@@ -99,7 +99,7 @@
             }
         }
 
-        function downloadData() {
+        function downloadData2() {
             const output = document.getElementById('output').textContent;
             if (!output) {
                 alert('Нет данных для скачивания');
@@ -117,38 +117,26 @@
             URL.revokeObjectURL(url);
         }
 
-        async function get_gpx() {
-            const input = document.getElementById('input').value;
+        function downloadData() {
+    const output = document.getElementById('output').textContent;
+    if (!output) {
+        alert('Нет данных для скачивания');
+        return;
+    }
 
-            try {
-                const response = await fetch(' /api/geocode_gpx', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ address: input }),
-                });
+    const jsonData = JSON.parse(output);
+    const resultText = jsonData.result; // extract the text from the result property
 
-                if (!response.ok) {
-                    throw new Error('Ошибка при отправке запроса');
-                }
-
-
-                const data = await response.json();
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'geocoding_result.gpx';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-            } catch (error) {
-                output.textContent = 'Произошла ошибка: ' + error.message;
-            }
-        }
+    const blob = new Blob([resultText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'geocoding_result.gpx';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
 
     </script>
 </body>
