@@ -92,8 +92,9 @@
                 }
 
                 const data = await response.json();
-                console.log(data)
-                output.textContent = JSON.stringify(data, null, 2);
+
+
+                output.textContent = JSON.stringify(data.result, null, 2);
             } catch (error) {
                 output.textContent = 'Произошла ошибка: ' + error.message;
             }
@@ -118,25 +119,25 @@
         }
 
         function downloadData() {
-    const output = document.getElementById('output').textContent;
-    if (!output) {
-        alert('Нет данных для скачивания');
-        return;
-    }
+            const output = document.getElementById('output').textContent;
+            if (!output) {
+                alert('Нет данных для скачивания');
+                return;
+            }
 
-    const jsonData = JSON.parse(output);
-    const resultText = jsonData.result; // extract the text from the result property
+            const jsonData = JSON.parse(output);
+            const resultText = jsonData.result; // extract the text from the result property
 
-    const blob = new Blob([resultText], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'geocoding_result.gpx';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-}
+            const blob = new Blob([resultText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'geocoding_result.gpx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
 
     </script>
 </body>

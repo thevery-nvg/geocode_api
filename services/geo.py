@@ -5,13 +5,14 @@ from typing import List, Tuple
 
 
 class Coordinates:
-    def __init__(self,data):
+    def __init__(self, data):
         self.patterns = {
             "pa": (r"N(0?\d{2})(\d{2})(\d{2}\.\d{1,3})", r"E(0?\d{2})(\d{2})(\d{2}\.\d{1,3})"),
             "pb": (r"N(0?\d{2})(\d{1,2}\.\d{1,3})", r"E(0?\d{2})(\d{1,2}\.\d{1,3})"),
             "pc": (r"N?(\d{2}\.\d+)", r"E?(\d{2}\.\d+)")
         }
         self.data = data
+        self.screen = ""
         self.out = []
 
     @staticmethod
@@ -44,9 +45,10 @@ class Coordinates:
                 for lat, lon in zip(lats, lons):
                     coord = "N" + "".join(lat) + "E" + "".join(lon)
                     self.out.append(self.convert_coordinates_full(f"{p1}{p2}", coord))
+                for i in self.out:
+                    self.screen += str(i) + "\n"
                 return self.out
 
-        print("NO MATCHES")
         return []
 
     def __call__(self, *args, **kwargs) -> List[Tuple[float, float]]:
@@ -96,6 +98,3 @@ class CreateGPX:
     def __call__(self, data: List[Tuple[float, float]]):
         self.create_xml(data)
         return self.output
-
-
-
