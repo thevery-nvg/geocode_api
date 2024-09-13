@@ -30,7 +30,9 @@
         }
 
         .output-section {
-            background-color: #e0e0e0;
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         textarea {
@@ -59,106 +61,94 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="input-section">
-            <h2>Введите данные</h2>
-            <textarea id="input" placeholder="Введите адрес для геокодирования"></textarea>
-            <button onclick="sendData()">Отправить</button>
-            <button onclick="downloadData()">Скачать результат</button>
-            <input type="hidden" id="hiddenField" name="hiddenData"> </input>
-        </div>
-        <div class="output-section">
-            <h2>Результат</h2>
-            <div id="output"></div>
-        </div>
+<div class="container">
+    <div class="input-section">
+        <h2>Введите данные</h2>
+        <textarea id="input" placeholder="Введите адрес для геокодирования"></textarea>
+        <button onclick="sendData()">Отправить</button>
+        <button onclick="downloadData()">Скачать результат</button>
+        <input type="hidden" id="hiddenField" name="hiddenData">
     </div>
+    <div class="output-section">
+        <h2>Результат</h2>
+        <div id="output"></div>
+    </div>
+</div>
 
-    <script>
-        async function sendData() {
-            const input = document.getElementById('input').value;
-            const hiddenField = document.getElementById('hiddenField');
-            const output = document.getElementById('output');
+<script>
+    async function sendData() {
+        const input = document.getElementById('input').value;
+        const hiddenField = document.getElementById('hiddenField');
+        const output = document.getElementById('output');
 
-            try {
-                const response = await fetch('/api/geocode', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ address: input }),
-                });
+        try {
+            const response = await fetch('/api/geocode', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ address: input }),
+            });
 
-                if (!response.ok) {
-                    throw new Error('Ошибка при отправке запроса');
-                }
-
-                const data = await response.json();
-
-
-                hiddenField.textContent = JSON.stringify(data.result, null, 2);
-            } catch (error) {
-                hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+            if (!response.ok) {
+                throw new Error('Ошибка при отправке запроса');
             }
-            try {
-                const response = await fetch('/api/geocode2', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ address: input }),
-                });
 
-                if (!response.ok) {
-                    throw new Error('Ошибка при отправке запроса');
-                }
-
-                const data = await response.json();
+            const data = await response.json();
 
 
-                output.textContent = JSON.stringify(data.result, null, 2);
-            } catch (error) {
-                output.textContent = 'Произошла ошибка: ' + error.message;
+            hiddenField.textContent = JSON.stringify(data.result, null, 2);
+        } catch (error) {
+            hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+        }
+        try {
+            const response = await fetch('/api/geocode2', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ address: input }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при отправке запроса');
             }
+
+            const data = await response.json();
+            let coordinatesList = '';
+            data.result.forEach(coord => {
+                coordinatesList += 'Lat: ${coord.lat}, Lon: ${coord.lon}<br>';
+            });
+            output.innerHTML = coordinatesList;
+
+            output.textContent = JSON.stringify(data.result, null, 2);
+        } catch (error) {
+            output.textContent = 'Произошла ошибка: ' + error.message;
+        }
+    }
+
+
+
+    function downloadData() {
+        const output = document.getElementById('hiddenField').textContent;
+        if (!output) {
+            alert('Нет данных для скачивания');
+            return;
         }
 
-        function downloadData2() {
-            const output = document.getElementById('output').textContent;
-            if (!output) {
-                alert('Нет данных для скачивания');
-                return;
-            }
+        const jsonData = JSON.parse(output);
+        const blob = new Blob([jsonData], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'geocoding_result.gpx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
 
-            const blob = new Blob([output], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'geocoding_result.gpx';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function downloadData() {
-            const output = document.getElementById('hiddenField').textContent;
-            if (!output) {
-                alert('Нет данных для скачивания');
-                return;
-            }
-
-            const jsonData = JSON.parse(output);
-            const blob = new Blob([jsonData], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'geocoding_result.gpx';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-    </script>
+</script>
 </body>
 
 </html>

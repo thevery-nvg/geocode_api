@@ -12,7 +12,7 @@ class Coordinates:
             "pc": (r"N?(\d{2}\.\d+)", r"E?(\d{2}\.\d+)")
         }
         self.data = data
-        self.screen = ""
+        self.screen = []
         self.out = []
 
     @staticmethod
@@ -47,7 +47,7 @@ class Coordinates:
                     coord = "N" + "".join(lat) + "E" + "".join(lon)
                     self.out.append(self.convert_coordinates_full(f"{p1}{p2}", coord))
                 for i in self.out:
-                    self.screen += str(i) + "\n"
+                    self.screen.append(f"{i[0]}, {i[1]}")
                 return self.out
 
         return []
