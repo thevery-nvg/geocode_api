@@ -2,7 +2,7 @@
     const input = document.getElementById('input').value;
     const hiddenField = document.getElementById('hiddenField');
     const coordinatesList = document.getElementById('coordinatesList');
-    const button = document.getElementById('downloadButton');
+
     try {
         const response = await fetch('/api/geocode_list', {
             method: 'POST',
@@ -37,7 +37,6 @@
 
         const data = await response.json();
         hiddenField.value = JSON.stringify(data, null, 2);
-        button.style.backgroundColor = 'rgb(0, 150, 0)';
         console.log(hiddenField.value);
     } catch (error) {
          hiddenField.textContent = 'Произошла ошибка: ' + error.message;
@@ -102,7 +101,10 @@ function displayCoordinates(coordinates) {
 }
 
 function downloadData() {
+    const button = document.getElementById('downloadButton');
+
     const output = document.getElementById('hiddenField').value;
+
     if (!output) {
         alert('Нет данных для скачивания');
         return;
