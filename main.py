@@ -5,6 +5,8 @@ from fastapi.templating import Jinja2Templates
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
 
+from schemas import TransformRequest
+from services.convert_vba import utm_to_latlon, convert_coordinates
 from services.geo import geo_coding, geo_coding_full, google_decode_full, google_decode
 
 app = FastAPI()
@@ -52,10 +54,12 @@ async def test_geocode(request: Request):
     return x
 
 
-@app.post("/api/test")
-async def test_geocode():
-    a = ["this", "is", "a", "test", "data", "for", "testing", "the", "api"]
-    return a
+@app.post("/transform")
+async def transform_value(request: TransformRequest):
+    transformed_value = utm_to_latlon(request.value)
+    transformed_value = convert_coordinates(transformed_value)
+
+    return {"original": request.value, "transformed": transformed_value}
 
 
 if __name__ == '__main__':
