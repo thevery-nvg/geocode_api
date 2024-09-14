@@ -44,6 +44,53 @@
     }
 
 }
+ async function sendData_google() {
+    const input = document.getElementById('input').value;
+    const hiddenField = document.getElementById('hiddenField');
+    const coordinatesList = document.getElementById('coordinatesList');
+    const button = document.getElementById('downloadButton');
+    try {
+        const response = await fetch('/api/google_list', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ address: input}),
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка при отправке запроса');
+        }
+
+        const data = await response.json();
+        displayCoordinates(data)
+    } catch (error) {
+         coordinatesList.textContent = 'Произошла ошибка: ' + error.message;
+    }
+
+        try {
+        const response = await fetch('/api/google_gpx', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ address: input}),
+        });
+
+        if (!response.ok) {
+            throw new Error('Ошибка при отправке запроса');
+        }
+
+        const data = await response.json();
+        hiddenField.value = JSON.stringify(data, null, 2);
+        button.style.backgroundColor = 'rgb(0, 150, 0)';
+        console.log(hiddenField.value);
+    } catch (error) {
+         hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+    }
+
+}
+
 function displayCoordinates(coordinates) {
   const coordinatesList = document.getElementById('coordinatesList');
   coordinatesList.innerHTML = '';

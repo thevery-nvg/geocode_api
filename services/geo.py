@@ -59,7 +59,57 @@ def geo_coding_full(data):
         <bounds maxlat="56.092479145154357" maxlon="55.898553002625704" minlat="53.633718425408006" minlon="51.073859967291355"/>
       </metadata>'''
     tail = '\n</gpx>'
-    output=""
+    output = ""
+    output += head
+    height = random.randint(40, 60)
+    for i, (lat, lon) in enumerate(data, start=1):
+        temp = f'''  <wpt lat="{lat}" lon="{lon}">
+                <ele>{height + random.randint(1, 5)}</ele>
+                <time>2024-01-16T12:56:09Z</time>
+                <name>{i:03}</name>
+                <cmt>30-APR-04 0:57:35</cmt>
+                <desc>30-APR-04 0:57:35</desc>
+                <sym>Flag, Green</sym>
+                <extensions>
+                <gpxx:WaypointExtension xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3">
+                <gpxx:DisplayMode>SymbolAndName</gpxx:DisplayMode>
+                </gpxx:WaypointExtension>
+                </extensions>
+                </wpt>\n'''
+        output += temp
+    output += tail
+    return output
+
+
+def google_decode(data):
+    a = re.findall("\d{2}\.\d+", data)
+    left = []
+    right = []
+    for i, val in enumerate(a):
+        if i % 2:
+            left.append(val)
+        else:
+            right.append(val)
+    res = []
+    for i in zip(left, right):
+        res.append(i)
+    return res
+
+
+def google_decode_full(data):
+    data = google_decode(data)
+    head = '''<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <gpx xmlns="http://www.topografix.com/GPX/1/1" creator="MapSource 6.16.3" version="1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+
+      <metadata>
+        <link href="http://www.garmin.com">
+          <text>Garmin International</text>
+        </link>
+        <time>2024-01-23T12:24:21Z</time>
+        <bounds maxlat="56.092479145154357" maxlon="55.898553002625704" minlat="53.633718425408006" minlon="51.073859967291355"/>
+      </metadata>'''
+    tail = '\n</gpx>'
+    output = ""
     output += head
     height = random.randint(40, 60)
     for i, (lat, lon) in enumerate(data, start=1):
