@@ -44,7 +44,7 @@
         button {
             padding: 10px 20px;
             margin-right: 10px;
-            background-color: #4CAF50;
+            background-color: rgb(0, 150, 0);
             color: white;
             border: none;
             cursor: default;
@@ -66,7 +66,8 @@
         <h2>Введите данные</h2>
         <textarea id="input" placeholder="Введите адрес для геокодирования"></textarea>
         <button onclick="sendData()">Отправить</button>
-        <button onclick="downloadData()">Скачать результат</button>
+        <button id="downloadButton" style="background-color: #ccc;" onclick="downloadData()">Скачать
+            результат</button>
         <input type="hidden" id="hiddenField" name="hiddenData">
     </div>
     <div class="output-section">
