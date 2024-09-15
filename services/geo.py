@@ -28,12 +28,13 @@ def convert_coordinates_full(p: str, data: str) -> Tuple[float, float]:
     return round(lat, 5), round(lon, 5)
 
 
-def raw_decode(data):
+def raw_decode(data,screen=False):
     try:
         line = clear_data(data[0])
     except:
         return []
     out = []
+    out_screen = []
     for pattern, (p1, p2) in patterns.items():
         d = clear_data(reduce(lambda x, y: x + y, data))
         if re.fullmatch(f"{p1}{p2}", line) or re.search(p1, d):
@@ -42,14 +43,20 @@ def raw_decode(data):
             for lat, lon in zip(lats, lons):
                 coord = "N" + "".join(lat) + "E" + "".join(lon)
                 out.append(convert_coordinates_full(f"{p1}{p2}", coord))
-            return out
+                x = convert_coordinates_full(f"{p1}{p2}", coord)
+                out_screen.append(decimal_degrees_to_latlon(x[0],x[1]))
+            if screen:
+                return out_screen
+            else:
+                return out
     return []
 
 
-def google_decode(data):
+def google_decode(data,screen=False):
     a = re.findall("\d{2}\.\d+", data)
     left = []
     right = []
+    res_screen = []
     for i, val in enumerate(a):
         if i % 2:
             left.append(val)
@@ -58,7 +65,11 @@ def google_decode(data):
     res = []
     for i in zip(left, right):
         res.append(i)
-    return res
+        res_screen.append(decimal_degrees_to_latlon(i[0], i[1]))
+    if screen:
+        return res_screen
+    else:
+        return res
 
 
 def geo_decode_gpx(data):
@@ -93,3 +104,56 @@ def geo_decode_gpx(data):
         output += temp
     output += tail
     return output
+
+
+from pyproj import Proj
+
+wgs84 = Proj('epsg:4326')
+
+
+def decimal_degrees_to_latlon(x, y):
+    degrees_symbol = '° '
+    minutes_symbol = "´"
+    seconds_symbol = "´´"
+    lat, lon = wgs84(x, y, inverse=True)
+    lat_deg, lat_min, lat_sec = lat_to_dms(lat)
+    lon_deg, lon_min, lon_sec = lon_to_dms(lon)
+    # return (lat_deg, lat_min, lat_sec), (lon_deg, lon_min, lon_sec)
+    return (f"N{lat_deg}{degrees_symbol}{lat_min}{minutes_symbol}{lat_sec}{seconds_symbol}"
+            f" E{lon_deg}{degrees_symbol}{lon_min}{minutes_symbol}{lon_sec}{seconds_symbol}")
+
+
+def lat_to_dms(lat):
+    deg = int(lat)
+    min = int((lat - deg) * 60)
+    sec = int((lat - deg - min / 60) * 3600)
+    return deg, min, sec
+
+
+def lon_to_dms(lon):
+    deg = int(lon)
+    min = int((lon - deg) * 60)
+    sec = int((lon - deg - min / 60) * 3600)
+    return deg, min, sec
+
+
+if __name__ == '__main__':
+    degrees_symbol = '° '
+    minutes_symbol = "´"
+    seconds_symbol = "´´"
+    s = [
+        (60.96203, 70.87643),
+        (60.96190, 70.87728),
+        (60.96170, 70.87860),
+        (60.96150, 70.87993),
+        (60.96130, 70.88122),
+        (60.96110, 70.88250),
+        (60.96088, 70.88387),
+        (60.96070, 70.88510),
+        (60.96043, 70.88678),
+        (60.96037, 70.88725),
+        (60.96027, 70.88783),
+    ]
+    for n, i in enumerate(s):
+        print(n + 1)
+        print(decimal_degrees_to_latlon(i[0], i[1]))

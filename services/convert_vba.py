@@ -82,7 +82,7 @@ def convert_coordinates(coordinates: str) -> str:
 
 
 if __name__ == '__main__':
-    utm_string = "43 V 381324 6751887"
+    utm_string1 = "43 V 381324 6751887"
     # N60 53 03.7 E72 48 48.4
     # 60 53 3.7N 72 48 48.4E
-    print(utm_to_latlon(utm_string))
+    print(utm_to_latlon(utm_string1))

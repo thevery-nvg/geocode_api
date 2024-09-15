@@ -29,7 +29,7 @@ async def read_root(request: Request):
 @app.post("/api/geocode_list")
 async def geocode_list(request: Request):
     d = await request.json()
-    x = raw_decode(d["address"])
+    x = raw_decode(d["address"],screen=True)
     return x
 
 
@@ -43,7 +43,7 @@ async def geocode_gpx(request: Request):
 @app.post("/api/google_list")
 async def google_list(request: Request):
     d = await request.json()
-    x = google_decode(d["address"])
+    x = google_decode(d["address"], screen=True)
     return x
 
 
