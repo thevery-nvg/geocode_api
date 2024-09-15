@@ -1,13 +1,19 @@
+import io
+
+import numpy as np
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
+from matplotlib import pyplot as plt
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import StreamingResponse
 
 from schemas import TransformRequest
 from services.convert_vba import utm_to_latlon, convert_coordinates
 from services.geo import raw_decode, geo_decode_gpx, google_decode
+from services.plt_pic import get_plot
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -29,7 +35,7 @@ async def read_root(request: Request):
 @app.post("/api/geocode_list")
 async def geocode_list(request: Request):
     d = await request.json()
-    x = raw_decode(d["address"],screen=True)
+    x = raw_decode(d["address"], screen=True)
     return x
 
 
@@ -60,6 +66,33 @@ async def transform_value(request: TransformRequest):
     transformed_value = convert_coordinates(transformed_value)
 
     return {"original": request.value, "transformed": transformed_value}
+
+
+@app.get("/api/plot")
+async def plot():
+    # Пример данных
+    coordinates = [(1, 2), (2, 3), (3, 5), (4, 7), (5, 11)]
+
+    # Разделяем на X и Y
+    x, y = zip(*coordinates)
+    x, y = np.array(x), np.array(y)
+
+    # Создаем график
+    plt.figure()
+    plt.plot(x, y, marker='o')
+    plt.title('Линия по координатам')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.grid(True)
+
+    # Сохраняем график в буфер
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    plt.close()
+    img.seek(0)  # Перемещаем курсор в начало файла
+
+    # Возвращаем изображение как ответ
+    return StreamingResponse(img, media_type="image/png")
 
 
 if __name__ == '__main__':

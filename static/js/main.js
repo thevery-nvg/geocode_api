@@ -1,3 +1,34 @@
+ async function fetchAndDisplayPlot() {
+            try {
+                // Отправляем GET-запрос к эндпоинту /api/plot
+                const response = await fetch('/api/plot');
+
+                // Проверяем, успешен ли ответ
+                if (!response.ok) {
+                    throw new Error('Ошибка сети: ' + response.statusText);
+                }
+
+                // Получаем данные изображения в виде Blob
+                const blob = await response.blob();
+
+                // Создаём временный URL для Blob
+                const imageUrl = URL.createObjectURL(blob);
+
+                // Устанавливаем источник изображения на полученный URL
+                const imgElement = document.getElementById('plotImage');
+                imgElement.src = imageUrl;
+
+                // Опционально: освобождаем URL после загрузки изображения
+                imgElement.onload = () => {
+                    URL.revokeObjectURL(imageUrl);
+                };
+
+            } catch (error) {
+                console.error('Ошибка при загрузке графика:', error);
+                alert('Не удалось загрузить график. Проверьте консоль для деталей.');
+            }
+        }
+
  async function sendData() {
     const input = document.getElementById('input').value;
     const hiddenField = document.getElementById('hiddenField');
@@ -37,7 +68,7 @@
 
         const data = await response.json();
         hiddenField.value = JSON.stringify(data, null, 2);
-        console.log(hiddenField.value);
+
     } catch (error) {
          hiddenField.textContent = 'Произошла ошибка: ' + error.message;
     }
@@ -121,3 +152,6 @@ function downloadData() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
+
+
+

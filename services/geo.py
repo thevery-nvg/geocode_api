@@ -28,7 +28,7 @@ def convert_coordinates_full(p: str, data: str) -> Tuple[float, float]:
     return round(lat, 5), round(lon, 5)
 
 
-def raw_decode(data,screen=False):
+def raw_decode(data, screen=False):
     try:
         line = clear_data(data[0])
     except:
@@ -44,7 +44,7 @@ def raw_decode(data,screen=False):
                 coord = "N" + "".join(lat) + "E" + "".join(lon)
                 out.append(convert_coordinates_full(f"{p1}{p2}", coord))
                 x = convert_coordinates_full(f"{p1}{p2}", coord)
-                out_screen.append(decimal_degrees_to_latlon(x[0],x[1]))
+                out_screen.append(decimal_degrees_to_latlon(x[0], x[1]))
             if screen:
                 return out_screen
             else:
@@ -52,7 +52,7 @@ def raw_decode(data,screen=False):
     return []
 
 
-def google_decode(data,screen=False):
+def google_decode(data, screen=False):
     a = re.findall("\d{2}\.\d+", data)
     left = []
     right = []
