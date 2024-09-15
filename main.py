@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from schemas import TransformRequest
 from services.convert_vba import utm_to_latlon, convert_coordinates
-from services.geo import geo_coding, geo_coding_full, google_decode_full, google_decode
+from services.geo import raw_decode, geo_decode_gpx, google_decode
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -27,31 +27,31 @@ async def read_root(request: Request):
 
 
 @app.post("/api/geocode_list")
-async def test_geocode(request: Request):
+async def geocode_list(request: Request):
     d = await request.json()
-    x = geo_coding(d["address"])
+    x = raw_decode(d["address"])
     return x
 
 
 @app.post("/api/geocode_gpx")
-async def test_geocode(request: Request):
+async def geocode_gpx(request: Request):
     d = await request.json()
-    x = geo_coding_full(d["address"])
-    return x
+    x = raw_decode(d["address"])
+    return geo_decode_gpx(x)
 
 
 @app.post("/api/google_list")
-async def test_geocode(request: Request):
+async def google_list(request: Request):
     d = await request.json()
     x = google_decode(d["address"])
     return x
 
 
 @app.post("/api/google_gpx")
-async def test_geocode(request: Request):
+async def google_gpx(request: Request):
     d = await request.json()
-    x = google_decode_full(d["address"])
-    return x
+    x = google_decode(d["address"])
+    return geo_decode_gpx(x)
 
 
 @app.post("/transform")
@@ -64,5 +64,3 @@ async def transform_value(request: TransformRequest):
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=5555)
-
-
