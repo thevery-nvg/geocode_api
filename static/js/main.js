@@ -1,35 +1,35 @@
- async function fetchAndDisplayPlot() {
-            try {
-                // Отправляем GET-запрос к эндпоинту /api/plot
-                const response = await fetch('/api/plot');
+async function fetchAndDisplayPlot() {
+    try {
+        // Отправляем GET-запрос к эндпоинту /api/plot
+        const response = await fetch('/api/plot');
 
-                // Проверяем, успешен ли ответ
-                if (!response.ok) {
-                    throw new Error('Ошибка сети: ' + response.statusText);
-                }
-
-                // Получаем данные изображения в виде Blob
-                const blob = await response.blob();
-
-                // Создаём временный URL для Blob
-                const imageUrl = URL.createObjectURL(blob);
-
-                // Устанавливаем источник изображения на полученный URL
-                const imgElement = document.getElementById('plotImage');
-                imgElement.src = imageUrl;
-
-                // Опционально: освобождаем URL после загрузки изображения
-                imgElement.onload = () => {
-                    URL.revokeObjectURL(imageUrl);
-                };
-
-            } catch (error) {
-                console.error('Ошибка при загрузке графика:', error);
-                alert('Не удалось загрузить график. Проверьте консоль для деталей.');
-            }
+        // Проверяем, успешен ли ответ
+        if (!response.ok) {
+            throw new Error('Ошибка сети: ' + response.statusText);
         }
 
- async function sendData() {
+        // Получаем данные изображения в виде Blob
+        const blob = await response.blob();
+
+        // Создаём временный URL для Blob
+        const imageUrl = URL.createObjectURL(blob);
+
+        // Устанавливаем источник изображения на полученный URL
+        const imgElement = document.getElementById('plotImage');
+        imgElement.src = imageUrl;
+
+        // Опционально: освобождаем URL после загрузки изображения
+        imgElement.onload = () => {
+            URL.revokeObjectURL(imageUrl);
+        };
+
+    } catch (error) {
+        console.error('Ошибка при загрузке графика:', error);
+        alert('Не удалось загрузить график. Проверьте консоль для деталей.');
+    }
+}
+
+async function sendData() {
     const input = document.getElementById('input').value;
     const hiddenField = document.getElementById('hiddenField');
     const coordinatesList = document.getElementById('coordinatesList');
@@ -40,7 +40,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: input}),
+            body: JSON.stringify({ address: input }),
         });
 
         if (!response.ok) {
@@ -50,16 +50,16 @@
         const data = await response.json();
         displayCoordinates(data)
     } catch (error) {
-         coordinatesList.textContent = 'Произошла ошибка: ' + error.message;
+        coordinatesList.textContent = 'Произошла ошибка: ' + error.message;
     }
 
-        try {
+    try {
         const response = await fetch('/api/geocode_gpx', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: input}),
+            body: JSON.stringify({ address: input }),
         });
 
         if (!response.ok) {
@@ -70,11 +70,11 @@
         hiddenField.value = JSON.stringify(data, null, 2);
 
     } catch (error) {
-         hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+        hiddenField.textContent = 'Произошла ошибка: ' + error.message;
     }
 
 }
- async function sendData_google() {
+async function sendData_google() {
     const input = document.getElementById('input').value;
     const hiddenField = document.getElementById('hiddenField');
     const coordinatesList = document.getElementById('coordinatesList');
@@ -85,7 +85,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: input}),
+            body: JSON.stringify({ address: input }),
         });
 
         if (!response.ok) {
@@ -95,16 +95,16 @@
         const data = await response.json();
         displayCoordinates(data)
     } catch (error) {
-         coordinatesList.textContent = 'Произошла ошибка: ' + error.message;
+        coordinatesList.textContent = 'Произошла ошибка: ' + error.message;
     }
 
-        try {
+    try {
         const response = await fetch('/api/google_gpx', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ address: input}),
+            body: JSON.stringify({ address: input }),
         });
 
         if (!response.ok) {
@@ -116,19 +116,19 @@
         button.style.backgroundColor = 'rgb(0, 150, 0)';
         console.log(hiddenField.value);
     } catch (error) {
-         hiddenField.textContent = 'Произошла ошибка: ' + error.message;
+        hiddenField.textContent = 'Произошла ошибка: ' + error.message;
     }
 
 }
 
 function displayCoordinates(coordinates) {
-  const coordinatesList = document.getElementById('coordinatesList');
-  coordinatesList.innerHTML = '';
-  coordinates.forEach(coord => {
-    const li = document.createElement('li');
-    li.textContent = coord;
-    coordinatesList.appendChild(li);
-  });
+    const coordinatesList = document.getElementById('coordinatesList');
+    coordinatesList.innerHTML = '';
+    coordinates.forEach(coord => {
+        const li = document.createElement('li');
+        li.textContent = coord;
+        coordinatesList.appendChild(li);
+    });
 }
 
 function downloadData() {
