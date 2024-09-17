@@ -1,4 +1,4 @@
-import io
+from io import BytesIO
 
 import numpy as np
 from fastapi import FastAPI, Request
@@ -15,6 +15,7 @@ from services.convert_vba import utm_to_latlon, convert_coordinates
 from services.geo import raw_decode, geo_decode_gpx, google_decode
 from services.plt_pic import get_plot
 
+plot_list = []
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -70,23 +71,47 @@ async def transform_value(request: TransformRequest):
 
 @app.get("/api/plot")
 async def plot():
-    # Пример данных
-    coordinates = [(1, 2), (2, 3), (3, 5), (4, 7), (5, 11)]
+    s = [
+        (60.96212, 70.87592),
+        (60.96212, 70.87600),
+        (60.96207, 70.87632),
+        (60.96203, 70.87643),
+        (60.96190, 70.87728),
+        (60.96170, 70.87860),
+        (60.96150, 70.87993),
+        (60.96130, 70.88122),
+        (60.96110, 70.88250),
+        (60.96052, 70.88268),
 
-    # Разделяем на X и Y
-    x, y = zip(*coordinates)
-    x, y = np.array(x), np.array(y)
+    ]
+    # Пример данных
+    coordinates = np.array(s)
+
+    # Нормализация данных
+    def normalize(data):
+        min_vals = np.min(data, axis=0)
+        max_vals = np.max(data, axis=0)
+        return (data - min_vals) / (max_vals - min_vals)
+
+    normalized_coordinates = normalize(coordinates)
+
+    # Разделяем на X и Y после нормализации
+    x, y = normalized_coordinates[:, 0], normalized_coordinates[:, 1]
 
     # Создаем график
     plt.figure()
     plt.plot(x, y, marker='o')
-    plt.title('Линия по координатам')
-    plt.xlabel('X')
-    plt.ylabel('Y')
+    plt.title('Нормализованная линия по координатам')
+    plt.xlabel('Normalized X')
+    plt.ylabel('Normalized Y')
     plt.grid(True)
 
+    # Настройка осей для отображения нормализованного диапазона
+    plt.xlim(-1.5, 1.5)
+    plt.ylim(-1.5, 1.5)
+
     # Сохраняем график в буфер
-    img = io.BytesIO()
+    img = BytesIO()
     plt.savefig(img, format='png')
     plt.close()
     img.seek(0)  # Перемещаем курсор в начало файла

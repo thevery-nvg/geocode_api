@@ -1,3 +1,5 @@
+import itertools
+import math
 import re
 import random
 from functools import reduce
@@ -44,7 +46,7 @@ def raw_decode(data, screen=False):
                 coord = "N" + "".join(lat) + "E" + "".join(lon)
                 out.append(convert_coordinates_full(f"{p1}{p2}", coord))
                 x = convert_coordinates_full(f"{p1}{p2}", coord)
-                out_screen.append(decimal_degrees_to_latlon(x[0], x[1]))
+                out_screen.append(decimal_degrees_full_form(x[0], x[1]))
             if screen:
                 return out_screen
             else:
@@ -65,7 +67,7 @@ def google_decode(data, screen=False):
     res = []
     for i in zip(left, right):
         res.append(i)
-        res_screen.append(decimal_degrees_to_latlon(i[0], i[1]))
+        res_screen.append(decimal_degrees_full_form(i[0], i[1]))
     if screen:
         return res_screen
     else:
@@ -125,16 +127,80 @@ def decimal_degrees_to_latlon(x, y):
 
 def lat_to_dms(lat):
     deg = int(lat)
-    min = int((lat - deg) * 60)
-    sec = int((lat - deg - min / 60) * 3600)
-    return deg, min, sec
+    min_ = int((lat - deg) * 60)
+    sec = int((lat - deg - min_ / 60) * 3600)
+    return deg, min_, sec
 
 
 def lon_to_dms(lon):
     deg = int(lon)
-    min = int((lon - deg) * 60)
-    sec = int((lon - deg - min / 60) * 3600)
-    return deg, min, sec
+    min_ = int((lon - deg) * 60)
+    sec = int((lon - deg - min_ / 60) * 3600)
+    return deg, min_, sec
+
+
+def degrees_to_radians(degrees):
+    return degrees * (math.pi / 180)
+
+
+def cross_poductZ(x1, y1, x2, y2):
+    return x1 * y2 - x2 * y1
+
+
+def rotation_direction(latA, lonA, latB, lonB, latC, lonC):
+    vectorAB = [lonB - lonA, latB - latA]
+    vectorBC = [lonC - lonB, latC - latB]
+
+    cross_product = cross_poductZ(vectorAB[0], vectorAB[1], vectorBC[0], vectorBC[1])
+
+    if cross_product > 0:
+        return "Налево"
+    elif cross_product < 0:
+        return "Направо"
+    else:
+        return "На одной прямой"
+
+
+import math
+
+
+def angle_between_points(latA, lonA, latB, lonB, latC, lonC):
+    latARad = degrees_to_radians(latA)
+    latBRad = degrees_to_radians(latB)
+
+    vectorAB = [(lonB - lonA) * math.cos(latARad), latB - latA]
+    vectorBC = [(lonC - lonB) * math.cos(latBRad), latC - latB]
+
+    dot_product = vectorAB[0] * vectorBC[0] + vectorAB[1] * vectorBC[1]
+
+    lengthAB = math.sqrt(math.pow(vectorAB[0], 2) + math.pow(vectorAB[1], 2))
+    lengthBC = math.sqrt(math.pow(vectorBC[0], 2) + math.pow(vectorBC[1], 2))
+
+    angle_rad = math.acos(dot_product / (lengthAB * lengthBC))
+
+    angle_deg = angle_rad * (180 / math.pi)
+
+    return angle_deg
+
+
+def process_coordinates(coordinates):
+    angles = []
+
+    for i in range(len(coordinates) - 2):
+        latA, lonA = coordinates[i]
+        latB, lonB = coordinates[i + 1]
+        latC, lonC = coordinates[i + 2]
+
+        angle = angle_between_points(latA, lonA, latB, lonB, latC, lonC)
+        angles.append(angle)
+
+    return angles
+
+def decimal_degrees_full_form(x, y):
+    degrees_symbol = '° '
+    minutes_symbol = "´"
+    seconds_symbol = "´´"
+    return f"N{x}{degrees_symbol}E{y}{degrees_symbol}"
 
 
 if __name__ == '__main__':
@@ -142,18 +208,16 @@ if __name__ == '__main__':
     minutes_symbol = "´"
     seconds_symbol = "´´"
     s = [
+        (60.96212, 70.87592),
+        (60.96212, 70.87600),
+        (60.96207, 70.87632),
         (60.96203, 70.87643),
         (60.96190, 70.87728),
         (60.96170, 70.87860),
         (60.96150, 70.87993),
         (60.96130, 70.88122),
         (60.96110, 70.88250),
-        (60.96088, 70.88387),
-        (60.96070, 70.88510),
-        (60.96043, 70.88678),
-        (60.96037, 70.88725),
-        (60.96027, 70.88783),
+        (60.96052, 70.88268),
+
     ]
-    for n, i in enumerate(s):
-        print(n + 1)
-        print(decimal_degrees_to_latlon(i[0], i[1]))
+    print(process_coordinates(s))
