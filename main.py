@@ -61,7 +61,7 @@ async def google_gpx(request: Request):
     return geo_decode_gpx(x)
 
 
-@app.пуе("/api/autocad")
+@app.get("/api/autocad")
 async def autocad():
     autocad_decode()
 

@@ -36,7 +36,7 @@ def get_vectors():
 
 def autocad_decode():
     lines = []
-    with open('data2.txt', 'r', encoding='utf-8') as f:
+    with open('E:\\Public\\web\\acad_data\\data.txt', 'r') as f:
         for i in f.readlines():
             lines.append(re.sub(r'\"', '', i))
 
@@ -69,7 +69,7 @@ def autocad_decode():
         points[i].append(mark)
         points[i].append(crd)
 
-    with open('data.txt', 'w') as f:
+    with open('E:\\Public\\web\\acad_data\\data.txt', 'w') as f:
         for i in points:
             f.write(" ".join(list(map(str, i))) + "\n")
     for i in points:
