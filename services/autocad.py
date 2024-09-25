@@ -34,44 +34,43 @@ def get_vectors():
     right_vector = right_vector / np.linalg.norm(right_vector)
     return left_vector, right_vector
 
+def autocad_decode():
+    lines = []
+    with open('data2.txt', 'r', encoding='utf-8') as f:
+        for i in f.readlines():
+            lines.append(re.sub(r'\"', '', i))
 
-lines = []
-with open('data2.txt', 'r', encoding='utf-8') as f:
-    for i in f.readlines():
-        lines.append(re.sub(r'\"', '', i))
+    done = False
+    length = 30
+    direction_vector_right, direction_vector_left = get_vectors()
+    marks = []
+    crds = []
+    while not done:
+        start_point = np.array([50, 100])
+        points = [start_point.tolist()]
+        direction = direction_vector_right
+        for i in range(1, len(lines)):
+            if "+" in lines[i]:
+                direction = direction_vector_right
+            elif "-" in lines[i]:
+                direction = direction_vector_left
+            next_point = points[i - 1] + direction * length
+            points.append(next_point.tolist())
 
-done = False
-length = 30
-direction_vector_right, direction_vector_left = get_vectors()
-marks = []
-crds = []
-while not done:
-    start_point = np.array([50, 100])
-    points = [start_point.tolist()]
+        if points[1][0] < 235:
+            done = True
+        else:
+            length -= 2
+    for i, v in enumerate(lines):
+        mark = detect_mark(v)
+        marks.append(mark)
+        crd = detect_coordinates(v)
+        crds.append(crd)
+        points[i].append(mark)
+        points[i].append(crd)
 
-    direction = direction_vector_right
-    for i in range(1, len(lines)):
-        if "+" in lines[i]:
-            direction = direction_vector_right
-        elif "-" in lines[i]:
-            direction = direction_vector_left
-        next_point = points[i - 1] + direction * length
-        points.append(next_point.tolist())
-
-    if points[1][0] < 235:
-        done = True
-    else:
-        length -= 2
-for i,v in enumerate(lines):
-    mark = detect_mark(v)
-    marks.append(mark)
-    crd = detect_coordinates(v)
-    crds.append(crd)
-    points[i].append(mark)
-    points[i].append(crd)
-
-with open('data.txt', 'w') as f:
+    with open('data.txt', 'w') as f:
+        for i in points:
+            f.write(" ".join(list(map(str, i))) + "\n")
     for i in points:
-        f.write(" ".join(list(map(str, i))) + "\n")
-for i in points:
-    print(" ".join(list(map(str, i))))
+        print(" ".join(list(map(str, i))))

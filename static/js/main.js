@@ -155,3 +155,22 @@ function downloadData() {
 
 
 
+function call_autocad() {
+    const button = document.getElementById('loadPlotBtn');
+    return fetch('/api/autocad', {
+        method: 'GET',
+    })
+    .then(response => {
+        if (response.ok) {
+            return 'Успех';  // Если статус ответа 2xx
+            button.textContent = 'Успех';
+        } else {
+            return 'Неудача'; // Если статус ответа не 2xx
+            button.textContent = 'Неудача';
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        return 'Неудача';  // Если произошла ошибка во время запроса
+    });
+}

@@ -13,7 +13,7 @@ from starlette.responses import StreamingResponse
 from schemas import TransformRequest
 from services.convert_vba import utm_to_latlon, convert_coordinates
 from services.geo import raw_decode, geo_decode_gpx, google_decode
-from services.plt_pic import get_plot
+from services.autocad import autocad_decode
 
 plot_list = []
 app = FastAPI()
@@ -59,6 +59,11 @@ async def google_gpx(request: Request):
     d = await request.json()
     x = google_decode(d["address"])
     return geo_decode_gpx(x)
+
+
+@app.пуе("/api/autocad")
+async def autocad():
+    autocad_decode()
 
 
 @app.post("/transform")
