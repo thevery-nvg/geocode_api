@@ -3,7 +3,7 @@ import re
 
 
 def detect_mark(x):
-    if re.match("шурф|Шурф ШУРФ", x):
+    if re.match("шурф|Шурф|ШУРФ", x):
         return "ШФ"
     elif re.match("ЛЭП|лэп|леп|ЛЕП", x):
         return "ЛЭП"
@@ -34,9 +34,21 @@ def get_vectors():
     right_vector = right_vector / np.linalg.norm(right_vector)
     return left_vector, right_vector
 
+
+def get_rectangle_position(start_point, vector, rect_width=20, rect_height=30):
+    # Находим нормаль к вектору отрезка
+    normal_vector = np.array([-vector[1], vector[0]])  # Поворот на 90 градусов
+    normal_vector = normal_vector / np.linalg.norm(normal_vector)  # Нормализуем
+
+    # Смещаем нижний левый угол прямоугольника вдоль нормали
+    rectangle_position = start_point + normal_vector * rect_height  # Смещаем на высоту
+
+    return rectangle_position
+
+
 def autocad_decode():
     lines = []
-    with open('E:\\Public\\web\\acad_data\\data.txt', 'r') as f:
+    with open('data.txt', 'r', encoding='utf-8') as f:
         for i in f.readlines():
             lines.append(re.sub(r'\"', '', i))
 
@@ -69,8 +81,22 @@ def autocad_decode():
         points[i].append(mark)
         points[i].append(crd)
 
-    with open('E:\\Public\\web\\acad_data\\data.txt', 'w') as f:
+    rectangles = []
+    for i in range(len(points) - 1):
+        start_point = np.array(points[i][:2])
+        next_point = np.array(points[i + 1][:2])
+        vector = next_point - start_point
+        vector = vector / np.linalg.norm(vector)  # Нормализуем вектор
+        rect_pos = get_rectangle_position(start_point, vector)
+        rectangles.append(rect_pos)
+    for i in rectangles:
+        print(i)
+    with open('data_done.txt', 'w') as f:
         for i in points:
             f.write(" ".join(list(map(str, i))) + "\n")
     for i in points:
         print(" ".join(list(map(str, i))))
+
+
+if __name__ == '__main__':
+    autocad_decode()

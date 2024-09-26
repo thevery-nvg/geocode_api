@@ -162,11 +162,11 @@ function call_autocad() {
     })
     .then(response => {
         if (response.ok) {
-            return 'Успех';  // Если статус ответа 2xx
-            button.textContent = 'Успех';
+            window.confirm("Успех!");
+
         } else {
-            return 'Неудача'; // Если статус ответа не 2xx
-            button.textContent = 'Неудача';
+            window.confirm("Неудача!");
+
         }
     })
     .catch(error => {
