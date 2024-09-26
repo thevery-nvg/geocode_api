@@ -48,7 +48,7 @@ def get_rectangle_position(start_point, vector, rect_width=20, rect_height=30):
 
 def autocad_decode():
     lines = []
-    with open('data.txt', 'r', encoding='utf-8') as f:
+    with open('D:\\work\\geocode_api\\services\\data.txt', 'r', encoding='utf-8') as f:
         for i in f.readlines():
             lines.append(re.sub(r'\"', '', i))
 
@@ -78,8 +78,6 @@ def autocad_decode():
         marks.append(mark)
         crd = detect_coordinates(v)
         crds.append(crd)
-        points[i].append(mark)
-        points[i].append(crd)
 
     rectangles = []
     for i in range(len(points) - 1):
@@ -88,10 +86,15 @@ def autocad_decode():
         vector = next_point - start_point
         vector = vector / np.linalg.norm(vector)  # Нормализуем вектор
         rect_pos = get_rectangle_position(start_point, vector)
+        rect_pos = rect_pos.tolist()
+        rect_pos.append(marks[i])
+        rect_pos.append(crds[i])
         rectangles.append(rect_pos)
-    for i in rectangles:
-        print(i)
-    with open('data_done.txt', 'w') as f:
+    with open('D:\\work\\geocode_api\\services\\rect_positions.txt', 'w') as f:
+        for i in rectangles:
+            f.write(" ".join(list(map(str, i))) + "\n")
+
+    with open('D:\\work\\geocode_api\\services\\data_done.txt', 'w') as f:
         for i in points:
             f.write(" ".join(list(map(str, i))) + "\n")
     for i in points:
