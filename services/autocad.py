@@ -1,105 +1,110 @@
 import numpy as np
+import math
+import matplotlib.pyplot as plt
 import re
 
 
+def plot_line(points, labels):
+    x_coords, y_coords = zip(*points)
+
+    plt.figure(figsize=(8, 8))
+    plt.plot(x_coords, y_coords, '-o')
+    for i, j, l in zip(x_coords, y_coords, labels):
+        plt.text(i, j, l)
+    plt.grid()
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Ломаная линия')
+    plt.show()
+
+
 def detect_mark(x):
-    if re.match("шурф|Шурф|ШУРФ", x):
+    if re.search(r"[шШ][Фф]|шурф", x):
         return "ШФ"
-    elif re.match("ЛЭП|лэп|леп|ЛЕП", x):
+    elif re.search(r"\+", x):
+        return "УПП"
+    elif re.search(r"\-", x):
+        return "УПЛ"
+    elif re.search(r"НПД|КПД|[Дд]орога", x):
+        return "Дорога"
+    elif re.search(r"[кК][тТ]", x):
+        return "КТ"
+    elif re.match(r"[Лл][эЭеЕ][пП]", x):
         return "ЛЭП"
-    elif re.match("открытый|Открытый", x):
+    elif re.search(r"[оО][уУ]|открытый", x):
         return "ОУ"
-    elif re.match("угол|Угол|УГОЛ", x):
-        return "УП"
-    elif re.match("дорога", x):
-        return "ДРГ"
+    elif re.search(r"обваловка", x):
+        return "обваловка"
     else:
-        return "НЕТ"
+        return "НЕТ МЕТКИ"
 
 
 def detect_coordinates(x):
-    return re.search(r"N.+", x).group()
-
-
-def get_vectors():
-    # Высчитываем вектор налево
-    start = np.array([54, 106])
-    end_point = np.array([99, 132])
-    left_vector = end_point - start
-    left_vector = left_vector / np.linalg.norm(left_vector)
-    # Высчитываем вектор направо
-    start = np.array([99, 132])
-    end_point = np.array([191, 79])
-    right_vector = end_point - start
-    right_vector = right_vector / np.linalg.norm(right_vector)
-    return left_vector, right_vector
-
-
-def get_rectangle_position(start_point, vector, rect_width=20, rect_height=30):
-    # Находим нормаль к вектору отрезка
-    normal_vector = np.array([-vector[1], vector[0]])  # Поворот на 90 градусов
-    normal_vector = normal_vector / np.linalg.norm(normal_vector)  # Нормализуем
-
-    # Смещаем нижний левый угол прямоугольника вдоль нормали
-    rectangle_position = start_point + normal_vector * rect_height  # Смещаем на высоту
-
-    return rectangle_position
+    lat = re.search(r"[nN].+[eE]", x).group()[:-1]
+    lon = re.search(r"[Ee].+", x).group()
+    return " ".join([lat, lon])
 
 
 def autocad_decode():
     lines = []
-    with open('D:\\work\\geocode_api\\services\\data.txt', 'r', encoding='utf-8') as f:
+    with open('E:\\Public\\web\\acad_data\data.txt', 'r') as f:
         for i in f.readlines():
-            lines.append(re.sub(r'\"', '', i))
+            lines.append(re.sub(r'\"|\'| ', '', i))
+    labels = []
+    coordinates = []
+    for i in lines:
+        coordinates.append(detect_coordinates(i))
+    for i in lines:
+        labels.append(detect_mark(i))
+    # Начальная точка
+    start_point = np.array([50, 100])
 
-    done = False
-    length = 30
-    direction_vector_right, direction_vector_left = get_vectors()
-    marks = []
-    crds = []
-    while not done:
-        start_point = np.array([50, 100])
-        points = [start_point.tolist()]
-        direction = direction_vector_right
-        for i in range(1, len(lines)):
-            if "+" in lines[i]:
-                direction = direction_vector_right
-            elif "-" in lines[i]:
-                direction = direction_vector_left
-            next_point = points[i - 1] + direction * length
-            points.append(next_point.tolist())
+    # Шаг длины (например, 10 единиц)
+    step_length = 25
 
-        if points[1][0] < 235:
-            done = True
-        else:
-            length -= 2
-    for i, v in enumerate(lines):
-        mark = detect_mark(v)
-        marks.append(mark)
-        crd = detect_coordinates(v)
-        crds.append(crd)
+    # Углы в радианах для поворотов на 120 градусов
+    angle_right = -1 * np.pi / 3  # -120 градусов
+    angle_left = 1 * np.pi / 3  # +120 градусов
 
-    rectangles = []
-    for i in range(len(points) - 1):
-        start_point = np.array(points[i][:2])
-        next_point = np.array(points[i + 1][:2])
-        vector = next_point - start_point
-        vector = vector / np.linalg.norm(vector)  # Нормализуем вектор
-        rect_pos = get_rectangle_position(start_point, vector)
-        rect_pos = rect_pos.tolist()
-        rect_pos.append(marks[i])
-        rect_pos.append(crds[i])
-        rectangles.append(rect_pos)
-    with open('D:\\work\\geocode_api\\services\\rect_positions.txt', 'w') as f:
-        for i in rectangles:
-            f.write(" ".join(list(map(str, i))) + "\n")
+    # Матрицы поворота
+    rotation_right = np.array([[np.cos(angle_right), -np.sin(angle_right)],
+                               [np.sin(angle_right), np.cos(angle_right)]])
+    rotation_left = np.array([[np.cos(angle_left), -np.sin(angle_left)],
+                              [np.sin(angle_left), np.cos(angle_left)]])
 
-    with open('D:\\work\\geocode_api\\services\\data_done.txt', 'w') as f:
-        for i in points:
-            f.write(" ".join(list(map(str, i))) + "\n")
-    for i in points:
-        print(" ".join(list(map(str, i))))
+    # Начальное направление (по оси X, вправо)
+    current_direction = np.array([1, -0.5])
+
+    # Список меток для поворотов
+    # labels = ["faggot",'+', '-', 'asshole', '+', '-', '+',"motherfucker","+","fuck","-","bitch"]
+
+    # Массив для хранения всех точек
+    points = [start_point]
+
+    # Проходим по меткам и вычисляем новые координаты точек
+    for i, label in enumerate(labels):
+        if "УПП" in label:
+            # Поворот вправо
+            current_direction = np.dot(rotation_right, current_direction)
+        elif "УПЛ" in label:
+            # Поворот влево
+            current_direction = np.dot(rotation_left, current_direction)
+
+        # Вычисляем новую точку и добавляем её в список
+        new_point = points[-1] + current_direction * step_length
+        new_point = new_point.tolist()
+        points.append(new_point)
+    result = []
+    for p, l, c in zip(points, labels, coordinates):
+        result.append(f"{p[0]} {p[1]} {l} {c}")
+    # Преобразуем список точек в массив numpy
+    for i in result:
+        print(i)
+    with open("E:\\Public\web\\acad_data\\lines.txt", "w") as f:
+        for i in result:
+            f.write(f"{i}\n")
+    # plot_line(points,labels)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     autocad_decode()
