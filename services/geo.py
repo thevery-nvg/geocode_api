@@ -196,12 +196,13 @@ def process_coordinates(coordinates):
 
     return angles
 
-
+def zfillr(s):
+    return s+"0"*(8-len(s))
 def decimal_degrees_full_form(x, y):
     degrees_symbol = '° '
     minutes_symbol = "´"
     seconds_symbol = "´´"
-    return f"N{x}{degrees_symbol}E{y}{degrees_symbol}"
+    return f"N{zfillr(str(x))}{degrees_symbol}E{zfillr(str(y))}{degrees_symbol}"
 
 
 if __name__ == '__main__':

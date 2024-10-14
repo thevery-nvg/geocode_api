@@ -36,10 +36,11 @@ def detect_mark(x):
     else:
         return "ОТСТУТСТВУЕТ"
 
+
 def detect_coordinates(x):
     lat = re.search(r"[nN].+[eE]", x).group()[:-1]
     lon = re.search(r"[Ee].+", x).group()
-    return " ".join([lat, lon])
+    return " ".join([zfillr(lat), zfillr(lon)])
 
 
 def autocad_decode():
