@@ -196,6 +196,7 @@ def process_coordinates(coordinates):
 
     return angles
 
+
 def decimal_degrees_full_form(x, y):
     degrees_symbol = '° '
     minutes_symbol = "´"

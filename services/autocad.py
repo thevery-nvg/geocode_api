@@ -25,19 +25,16 @@ def detect_mark(x):
         return "УПП"
     elif re.search(r"\-", x):
         return "УПЛ"
-    elif re.search(r"НПД|КПД|[Дд]орога", x):
-        return "Дорога"
-    elif re.search(r"[кК][тТ]", x):
-        return "КТ"
     elif re.match(r"[Лл][эЭеЕ][пП]", x):
         return "ЛЭП"
-    elif re.search(r"[оО][уУ]|открытый", x):
-        return "ОУ"
-    elif re.search(r"обваловка", x):
-        return "обваловка"
+    elif re.match(r"[рР][эЭеЕ][кК][аА]", x):
+        return "река"
+    elif re.match(r"[дД]ор", x):
+        return "дорога"
+    elif re.match(r"отк", x):
+        return "ОТКРУЧ"
     else:
-        return "НЕТ МЕТКИ"
-
+        return "ОТСТУТСТВУЕТ"
 
 def detect_coordinates(x):
     lat = re.search(r"[nN].+[eE]", x).group()[:-1]
