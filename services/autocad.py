@@ -40,7 +40,7 @@ def detect_mark(x):
 def detect_coordinates(x):
     lat = re.search(r"[nN].+[eE]", x).group()[:-1]
     lon = re.search(r"[Ee].+", x).group()
-    return " ".join([zfillr(lat), zfillr(lon)])
+    return " ".join([lat, lon])
 
 
 def autocad_decode():
