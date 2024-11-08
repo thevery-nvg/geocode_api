@@ -204,7 +204,6 @@ def decimal_degrees_full_form(x, y):
     seconds_symbol = "´´"
     return f"N{zfillr(str(x))}{degrees_symbol}E{zfillr(str(y))}{degrees_symbol}"
 
-
 if __name__ == '__main__':
     degrees_symbol = '° '
     minutes_symbol = "´"

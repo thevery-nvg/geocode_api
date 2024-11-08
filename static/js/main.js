@@ -162,10 +162,10 @@ function call_autocad() {
     })
     .then(response => {
         if (response.ok) {
-            window.confirm("Успех!");
+            window.alert("Успех!");
 
         } else {
-            window.confirm("Неудача!");
+            window.alert("Неудача!");
 
         }
     })
