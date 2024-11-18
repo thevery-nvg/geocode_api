@@ -14,6 +14,8 @@ from schemas import TransformRequest
 from services.convert_vba import utm_to_latlon, convert_coordinates
 from services.geo import raw_decode, geo_decode_gpx, google_decode
 from services.autocad import autocad_decode
+import json
+from services.tomsk_autocad import autocad_decode_api
 
 plot_list = []
 app = FastAPI()
@@ -66,7 +68,6 @@ async def autocad():
     autocad_decode()
 
 
-
 @app.post("/transform")
 async def transform_value(request: TransformRequest):
     transformed_value = utm_to_latlon(request.value)
@@ -74,56 +75,13 @@ async def transform_value(request: TransformRequest):
 
     return {"original": request.value, "transformed": transformed_value}
 
-
-@app.get("/api/plot")
-async def plot():
-    s = [
-        (60.96212, 70.87592),
-        (60.96212, 70.87600),
-        (60.96207, 70.87632),
-        (60.96203, 70.87643),
-        (60.96190, 70.87728),
-        (60.96170, 70.87860),
-        (60.96150, 70.87993),
-        (60.96130, 70.88122),
-        (60.96110, 70.88250),
-        (60.96052, 70.88268),
-
-    ]
-    # Пример данных
-    coordinates = np.array(s)
-
-    # Нормализация данных
-    def normalize(data):
-        min_vals = np.min(data, axis=0)
-        max_vals = np.max(data, axis=0)
-        return (data - min_vals) / (max_vals - min_vals)
-
-    normalized_coordinates = normalize(coordinates)
-
-    # Разделяем на X и Y после нормализации
-    x, y = normalized_coordinates[:, 0], normalized_coordinates[:, 1]
-
-    # Создаем график
-    plt.figure()
-    plt.plot(x, y, marker='o')
-    plt.title('Нормализованная линия по координатам')
-    plt.xlabel('Normalized X')
-    plt.ylabel('Normalized Y')
-    plt.grid(True)
-
-    # Настройка осей для отображения нормализованного диапазона
-    plt.xlim(-1.5, 1.5)
-    plt.ylim(-1.5, 1.5)
-
-    # Сохраняем график в буфер
-    img = BytesIO()
-    plt.savefig(img, format='png')
-    plt.close()
-    img.seek(0)  # Перемещаем курсор в начало файла
-
-    # Возвращаем изображение как ответ
-    return StreamingResponse(img, media_type="image/png")
+@app.post("/json_ttt")
+async def try_parse_vba_json(request: Request):
+    data = await request.json()
+    print("Received JSON:", data)
+    a=autocad_decode_api(data)
+    output=json.dumps(a)
+    return a
 
 
 if __name__ == '__main__':
