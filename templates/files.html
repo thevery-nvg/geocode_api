@@ -3,11 +3,11 @@
 {% block title %}
 <title>Файлы - FastAPI Фронтенд</title>
 {% endblock %}
-{% block content %}
 
+{% block content %}
 <ul>
     {% for file in files %}
-    <li><a href="/download/{{ file }}">{{ file }}</a></li>
+    <li><a href="files/download/{{ file }}">{{ file }}</a></li>
     {% endfor %}
 </ul>
 {% endblock %}

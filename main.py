@@ -80,15 +80,16 @@ async def try_parse_vba_json(request: Request):
 
 
 FILES_DIR = Path("C:\\Users\\box7\\Downloads")
-files = os.listdir(FILES_DIR)
 
 
-@app.get("/f", response_class=HTMLResponse)
+
+@app.get("/files", response_class=HTMLResponse)
 async def send_files(request: Request):
+    files = os.listdir(FILES_DIR)
     return templates.TemplateResponse("files.html", {"request": request, "files": files})
 
 
-@app.get("/download/{filename}")
+@app.get("/files/download/{filename}")
 async def download_file(filename: str):
     file_path = os.path.join(FILES_DIR, filename)
     if not os.path.exists(file_path):
