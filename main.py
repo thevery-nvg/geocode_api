@@ -1,9 +1,15 @@
+import os
+from http.client import HTTPException
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from starlette.middleware.cors import CORSMiddleware
+from starlette.responses import FileResponse
+
 from schemas import TransformRequest
 from services.convert_vba import conv_coordinates_full
 from services.geo import raw_decode, geo_decode_gpx, google_decode
@@ -71,6 +77,23 @@ async def try_parse_vba_json(request: Request):
     # возможно стоит возвращать  output,потом будет видно работает или нет.
     # Но вроде работало
     return a
+
+
+FILES_DIR = Path("C:\\Users\\box7\\Downloads")
+files = os.listdir(FILES_DIR)
+
+
+@app.get("/f", response_class=HTMLResponse)
+async def send_files(request: Request):
+    return templates.TemplateResponse("files.html", {"request": request, "files": files})
+
+
+@app.get("/download/{filename}")
+async def download_file(filename: str):
+    file_path = os.path.join(FILES_DIR, filename)
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(file_path, filename=filename)
 
 
 if __name__ == '__main__':

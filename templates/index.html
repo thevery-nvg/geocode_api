@@ -1,26 +1,6 @@
-<html>
+{% extends 'base.html' %}
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
-        <meta http-equiv="pragma" content="no-cache" />
-        <meta http-equiv="expires" content="0" />
-        <title>Геокодирование - FastAPI Фронтенд</title>
-        <link rel="stylesheet" href="static/css/style.css?rnd=<?= rand(0, 999) ?>">
 
-    </head>
-
-    <body>
-        {% include 'navbar.html' %}
-
-        <div class="container">
-            {%include 'content.html'%}
-        </div>
-
-        <script src="static/js/main.js">
-
-    </script>
-    </body>
-
-</html>
+{% block content %}
+{% include 'content.html' %}
+{% endblock %}

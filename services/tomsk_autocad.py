@@ -22,10 +22,11 @@ def create_rotation_matrix(angle_degrees):
     # Создаем поворотную матрицу
     rotation_matrix = np.array([[np.cos(angle_radians), -np.sin(angle_radians)],
                                 [np.sin(angle_radians), np.cos(angle_radians)]])
+    return rotation_matrix
 
 
 def autocad_decode_api(labels):
-    labels=[x for x in labels.values()]
+    labels = [x for x in labels.values()]
     # Начальная точка
     start_point = np.array([50, 100])
     # Шаг длины
@@ -52,7 +53,7 @@ def autocad_decode_api(labels):
         new_point = points[-1] + current_direction * step_length
         new_point = new_point.tolist()
         points.append(new_point)
-    d={}
+    d = {}
     for i in points[:-1]:
-        d[float(i[0])]=float(i[1])
+        d[float(i[0])] = float(i[1])
     return d

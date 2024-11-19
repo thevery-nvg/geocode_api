@@ -1,10 +1,11 @@
-import itertools
-import math
 import re
 import random
 from functools import reduce
-from typing import List, Tuple
+from typing import Tuple
+from pyproj import Proj
+import math
 
+wgs84 = Proj('epsg:4326')
 patterns = {
     "pa": (r"N(0?\d{2})(\d{2})(\d{2}\.\d{1,3})", r"E(0?\d{2})(\d{2})(\d{2}\.\d{1,3})"),
     "pb": (r"N(0?\d{2})(\d{1,2}\.\d{1,3})", r"E(0?\d{2})(\d{1,2}\.\d{1,3})"),
@@ -108,11 +109,6 @@ def geo_decode_gpx(data):
     return output
 
 
-from pyproj import Proj
-
-wgs84 = Proj('epsg:4326')
-
-
 def decimal_degrees_to_latlon(x, y):
     degrees_symbol = '° '
     minutes_symbol = "´"
@@ -161,9 +157,6 @@ def rotation_direction(latA, lonA, latB, lonB, latC, lonC):
         return "На одной прямой"
 
 
-import math
-
-
 def angle_between_points(latA, lonA, latB, lonB, latC, lonC):
     latARad = degrees_to_radians(latA)
     latBRad = degrees_to_radians(latB)
@@ -196,13 +189,17 @@ def process_coordinates(coordinates):
 
     return angles
 
+
 def zfillr(s):
-    return s+"0"*(8-len(s))
+    return s + "0" * (8 - len(s))
+
+
 def decimal_degrees_full_form(x, y):
     degrees_symbol = '° '
     minutes_symbol = "´"
     seconds_symbol = "´´"
     return f"N{zfillr(str(x))}{degrees_symbol}E{zfillr(str(y))}{degrees_symbol}"
+
 
 if __name__ == '__main__':
     degrees_symbol = '° '

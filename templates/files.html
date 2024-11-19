@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Файлы - FastAPI Фронтенд</title>
+{% endblock %}
+{% block content %}
+
+<ul>
+    {% for file in files %}
+    <li><a href="/download/{{ file }}">{{ file }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
