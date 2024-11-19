@@ -63,11 +63,6 @@ async def google_gpx(request: Request):
     return geo_decode_gpx(x)
 
 
-@app.get("/api/autocad")
-async def autocad():
-    autocad_decode()
-
-
 @app.post("/transform")
 async def transform_value(request: TransformRequest):
     transformed_value = utm_to_latlon(request.value)
@@ -75,12 +70,13 @@ async def transform_value(request: TransformRequest):
 
     return {"original": request.value, "transformed": transformed_value}
 
+
 @app.post("/json_ttt")
 async def try_parse_vba_json(request: Request):
     data = await request.json()
     print("Received JSON:", data)
-    a=autocad_decode_api(data)
-    output=json.dumps(a)
+    a = autocad_decode_api(data)
+    output = json.dumps(a)
     return a
 
 

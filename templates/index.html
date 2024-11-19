@@ -1,40 +1,26 @@
 <html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Геокодирование - FastAPI Фронтенд</title>
-    <link rel="stylesheet" href="static/css/style.css">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
+        <title>Геокодирование - FastAPI Фронтенд</title>
+        <link rel="stylesheet" href="static/css/style.css?rnd=<?= rand(0, 999) ?>">
 
+    </head>
 
-</head>
+    <body>
+        {% include 'navbar.html' %}
 
-<body>
+        <div class="container">
+            {%include 'content.html'%}
+        </div>
 
-<div class="container">
-    <div class="input-section">
-        <h2>Введите данные</h2>
+        <script src="static/js/main.js">
 
-        <textarea id="input" placeholder="Введите данные для геокодирования" required></textarea>
-        <button onclick="sendData()" class="glow-on-hover">raw data</button>
-        <button onclick="sendData_google()" class="glow-on-hover" >google earth</button>
-        <button id="downloadButton" class="glow-on-hover" onclick="downloadData()"
-                >gpx</button>
-        <button id="loadPlotBtn" onclick="call_autocad()" class="glow-on-hover">build
-        </button>
-        <p></p>
-        <img id="plotImage" src="" alt="График появится здесь" />
-        <input type="hidden" id="hiddenField" name="hiddenData">
-    </div>
-    <div class="output-section">
-        <h2>Результат</h2>
-        <ul id="coordinatesList" ></ul>
-    </div>
-</div>
-
-<script src="static/js/main.js">
-
-</script>
-</body>
+    </script>
+    </body>
 
 </html>

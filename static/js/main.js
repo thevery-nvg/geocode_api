@@ -1,3 +1,4 @@
+
 async function fetchAndDisplayPlot() {
     try {
         // Отправляем GET-запрос к эндпоинту /api/plot
