@@ -81,6 +81,12 @@ def convert_coordinates(coordinates: str) -> str:
     return converted_coordinates
 
 
+def conv_coordinates_full(s):
+    transformed_value = utm_to_latlon(s)
+    transformed_value = convert_coordinates(transformed_value)
+    return transformed_value
+
+
 if __name__ == '__main__':
     utm_string1 = "43 V 381324 6751887"
     # N60 53 03.7 E72 48 48.4

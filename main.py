@@ -1,19 +1,12 @@
-from io import BytesIO
-
-import numpy as np
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
-from matplotlib import pyplot as plt
 from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import StreamingResponse
-
 from schemas import TransformRequest
-from services.convert_vba import utm_to_latlon, convert_coordinates
+from services.convert_vba import conv_coordinates_full
 from services.geo import raw_decode, geo_decode_gpx, google_decode
-from services.autocad import autocad_decode
 import json
 from services.tomsk_autocad import autocad_decode_api
 
@@ -65,9 +58,7 @@ async def google_gpx(request: Request):
 
 @app.post("/transform")
 async def transform_value(request: TransformRequest):
-    transformed_value = utm_to_latlon(request.value)
-    transformed_value = convert_coordinates(transformed_value)
-
+    transformed_value = conv_coordinates_full(request.value)
     return {"original": request.value, "transformed": transformed_value}
 
 
@@ -77,6 +68,8 @@ async def try_parse_vba_json(request: Request):
     print("Received JSON:", data)
     a = autocad_decode_api(data)
     output = json.dumps(a)
+    # возможно стоит возвращать  output,потом будет видно работает или нет.
+    # Но вроде работало
     return a
 
 
