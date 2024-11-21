@@ -1,0 +1,43 @@
+Function send_data_to_api()
+Dim ws As Worksheet
+Set ws = ThisWorkbook.Worksheets("pipeline")
+Dim data As Object
+Set data = CreateObject("scripting.dictionary")
+lastrow = ws.Cells(Rows.count, 1).End(xlUp).Row
+t = ThisWorkbook.Worksheets("passport").Cells(18, 2)
+p = ThisWorkbook.Worksheets("passport").Cells(17, 2)
+n = 0
+data.Add "t", t
+data.Add "p", p
+For i = 2 To lastrow
+    smin = Replace(ws.Cells(i, 4), ",", ".")
+    d = ws.Cells(i, 2)
+    data.Add n, ws.Cells(i, 1) & "f" & d & "f" & ws.Cells(i, 3) & "f" & smin & "f" & ws.Cells(i, 5) & "f" & Int(ws.Cells(i, 6))
+    n = n + 1
+Next i
+json = ConvertToJson(data)
+a = SendRequestPOST(json)
+Dim data2 As Object
+Set data2 = CreateObject("scripting.dictionary")
+Set data2 = ParseJson(a)
+Set ws = ThisWorkbook.Worksheets("tbl1")
+n = 3
+For Each k In data2.Keys()
+    ws.Cells(Int(n), 2) = Split(data2(k), "f")(0)
+    ws.Cells(Int(n), 3) = Split(data2(k), "f")(1)
+    ws.Cells(Int(n), 4) = Split(data2(k), "f")(2)
+    ws.Cells(Int(n), 5) = Split(data2(k), "f")(3)
+    ws.Cells(Int(n), 6) = Split(data2(k), "f")(4)
+    ws.Cells(Int(n), 7) = Split(data2(k), "f")(5)
+    ws.Cells(Int(n), 8) = Split(data2(k), "f")(6)
+    ws.Cells(Int(n), 9) = Split(data2(k), "f")(7)
+    ws.Cells(Int(n), 10) = Split(data2(k), "f")(8)
+    ws.Cells(Int(n), 11) = Split(data2(k), "f")(9)
+    ws.Cells(Int(n), 12) = Split(data2(k), "f")(10)
+    ws.Cells(Int(n), 13) = Split(data2(k), "f")(11)
+    ws.Cells(Int(n), 14) = Split(data2(k), "f")(12)
+    ws.Cells(Int(n), 15) = Split(data2(k), "f")(13)
+    n = n + 1
+Next
+
+End Function
