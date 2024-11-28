@@ -2,9 +2,9 @@ from fastapi import Request, APIRouter
 from schemas import TransformRequest
 from services.convert_vba import conv_coordinates_full
 from services.geo import raw_decode, geo_decode_gpx, google_decode
-
+import json
 from services.tomsk_autocad import autocad_decode_api
-from services.megion import parse_pipeline
+
 api_router = APIRouter(
     prefix="/api"
 )
@@ -49,13 +49,7 @@ async def try_parse_vba_json(request: Request):
     data = await request.json()
     print("Received JSON:", data)
     a = autocad_decode_api(data)
-    return a
-
-
-@api_router.post("/megion")
-async def try_parse_vba_json1(request: Request):
-    data = await request.json()
-    a = parse_pipeline(data)
-    for k in a:
-        print(f"{k=} {a[k]=}")
+    output = json.dumps(a)
+    # возможно стоит возвращать  output,потом будет видно работает или нет.
+    # Но вроде работало
     return a

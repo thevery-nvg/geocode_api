@@ -29,6 +29,9 @@ app.include_router(api_router)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
+@app.get("/snake", response_class=HTMLResponse)
+async def read_root(request: Request):
+    return templates.TemplateResponse("snake.html", {"request": request})
 
 FILES_DIR = Path("C:\\Users\\box7\\Downloads")
 

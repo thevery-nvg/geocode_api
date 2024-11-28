@@ -1,6 +1,6 @@
 @echo off
 
-call "E:\Public\web\venv\Scripts\activate.bat"
+call "E:\Public\geocode_api\venv\Scripts\activate.bat"
 
 
 python main.py
